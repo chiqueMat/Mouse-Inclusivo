@@ -12,29 +12,110 @@
 #include "UsbMultiHID.h" // Biblioteca USB
                 
 // Definições de botões e controles
-
+//botoes do joystick - digitais
 #define MV_LEFT 13
 #define MV_RIGHT 11
 #define MV_UP 10
 #define MV_DOWN 12
 
+// botao reset
 #define RESET 9
 
+// definicaio dos leds
 #define MODE_REFFERENCE_LED_1 3
 #define MODE_REFFERENCE_LED_2 A5
 #define MODE_REFFERENCE_LED_3 A4
 
 #define REPROG_AUX_PIN A3
 
-
+// definicaio de parametros globais
 #define PRECISION 2
 #define TIME_DELAY 20
 #define PAUSE 500
 #define HALF_PAUSE 250
 #define LITTLE_PAUSE 125
-
 #define BYPASS_TIMER_ISR 1
 
+//definicao da tabela de caracteres
+
+//definicoes retiradas de usbhid...
+
+//existem duas formas de trabalhar com essa tabela, colocar todas as conbinacoes e verificar os valores de ponteiros validos
+// ou colocar todos os valores como 0 e depois para valores de ponteiros validos colocar o valor correspondente, a segunda abordagem sera tomada
+#define nada 0
+const char tabela[]={ 
+ nada,//        0
+ nada,//        1
+ nada,//        2
+ nada,//        3
+ KEY_A,//       4
+ KEY_B,//       5
+ KEY_C,//       6
+ KEY_D,//       7
+ KEY_E,//       8
+ KEY_F,//       9
+ KEY_G,//       10
+ KEY_H,//       11
+ KEY_I,//       12
+ KEY_J,//       13
+ KEY_K,//       14
+ KEY_L,//       15
+ KEY_M,//       16
+ KEY_N,//       17
+ KEY_O,//       18
+ KEY_P,//       19
+ KEY_Q,//       20
+ KEY_R,//       21
+ KEY_S,//       22
+ KEY_T,//       23
+ KEY_U,//       24
+ KEY_V,//       25
+ KEY_W,//       26
+ KEY_X,//       27
+ KEY_Y,//       28
+ KEY_Z,//       29
+ KEY_1,//       30
+ KEY_2,//       31
+ KEY_3,//       32
+ KEY_4,//       33
+ KEY_5,//       34
+ KEY_6,//       35
+ KEY_7,//       36
+ KEY_8,//       37
+ KEY_9,//       38
+ KEY_0,//       39
+ KEY_ENTER,//        40
+ KEY_ESCAPE,//       41
+ KEY_DELETE,//       42
+ KEY_TAB,//          43
+ KEY_SPACE,//        44
+ KEY_MINUS,//        45
+ KEY_EQUALS,//       46
+ KEY_LBRACKET,//     47
+ KEY_RBRACKET,//     48
+ KEY_BACKSLASH,//    49
+ KEY_NONUS_NUMBER,// 50
+ KEY_SEMICOLON,//    51
+ KEY_QUOTE,//        52
+ KEY_TILDE,//        53
+ KEY_COMMA,//        54
+ KEY_PERIOD,//       55
+ KEY_SLASH,//        56
+ KEY_CAPSLOCK,//     57
+ KEY_F1,//      58
+ KEY_F2,//      59
+ KEY_F3,//      60
+ KEY_F4,//      61
+ KEY_F5,//      62
+ KEY_F6,//      63
+ KEY_F7,//      64
+ KEY_F8,//      65
+ KEY_F9,//      66
+ KEY_F10,//     67
+ KEY_F11,//     68
+ KEY_F12 //     69
+}
+*char poteiro_tabela=&tabela // inicia umpoteiro apontando para a constante tabela
 #define combination_01 0x0101 // 0000 0001 0000 0001
 #define combination_02 0x0201 // 0000 0010 0000 0001
 #define combination_03 0x0202 // 0000 0010 0000 0010
@@ -93,7 +174,8 @@
 #define combination_56 0x8410 // 1000 0100 0001 0000
 #define combination_57 0x8820 // 1000 1000 0010 0000
 #define combination_58 0x8801 // 1000 1000 0000 0001
- 
+
+// definicao dos botoes reprogramaveis
 byte BUTTON_LEFT =   7;
 byte BUTTON_2CLICK = 8;
 byte BUTTON_RIGHT =  6;
@@ -354,7 +436,6 @@ void verify_mode(){
 
 void verify_keyboard_buttons(){
     int i;
-
     if(pressed_second_combination_condition){
         if(digitalRead(mouse_pins[7])==HIGH){
 			second_combination=!second_combination;
@@ -411,16 +492,28 @@ void verify_keyboard_buttons(){
 		}
     }
 }
-
+//---500 linhas de do teclado que podem ser retiradas
 void keyboard_control(){
+	
+	ponteiro_tabela=&tabela+keyboard_buttons; // verificar se esta funcionando
+	cleanKeyBuffer(1);
+		if(shift){
+			pressKey2(*ponteiro_tabela,MOD_SHIFT_LEFT);
+		}else{
+			pressKey(*ponteiro_tabela);
+		}
+		usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses); // precisa fazer algo mais aqui??
+
+
+//<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	switch(keyboard_buttons){
-		case 0:
+		case 0:						// o que e este zero?? nao esta definido
 			cleanKeyBuffer(1);
 			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
 		break;
 		
 		case 0x8000:
-			cleanKeyBuffer(1);
+			cleanKeyBuffer(1);    // o que e este valor?? nao definido
 			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
 		break;
 		
@@ -433,553 +526,15 @@ void keyboard_control(){
 			}
 			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
 		break;
-		
-		case combination_02:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_E,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_E);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-
-		case combination_03:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_O,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_O);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_04:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_S,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_S);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_05:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_R,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_R);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-		
-		case combination_06:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_I,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_I);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_07:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_N,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_N);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-
-		case combination_08:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_D,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_D);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_09:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_M,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_M);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-		
-		case combination_10:
-			cleanKeyBuffer(1);
-			pressKey(KEY_ENTER);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
-		break;
-		
-		case combination_11:
-			cleanKeyBuffer(1);
-			pressKey(KEY_SPACE);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-		
-		case combination_12:
-			cleanKeyBuffer(1);
-			pressKey(KEY_DELETE);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-
-		case combination_13:
-			cleanKeyBuffer(1);
-			pressKey(KEY_TAB);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_14:
-			shift=!shift;     
-		break;
-		
-		case combination_15:
-			cleanKeyBuffer(1);
-			pressKey(KEY_BACKSLASH);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_16:
-			cleanKeyBuffer(1);
-			pressKey(KEY_ESCAPE);
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_17:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_U,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_U);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_18:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_T,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_T);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_19:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_C,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_C);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_20:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_SEMICOLON,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_SEMICOLON);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_21:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_L,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_L);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_22:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_P,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_P);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_23:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_V,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_V);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_24:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_G,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_G);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_25:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_H,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_H);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_26:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_Q,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_Q);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_27:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_B,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_B);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_28:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_F,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_F);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_29:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_Z,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_Z);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_30:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_J,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_J);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_31:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_X,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_X);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_32:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_K,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_K);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_33:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_W,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_W);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_34:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_Y,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_Y);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_35:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_PERIOD,MOD_SHIFT_LEFT);
-			}else{
-			pressKey(KEY_PERIOD);
-		  }
-		  usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_36:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_COMMA,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_COMMA);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_37:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_SLASH,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_SLASH);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_38:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_LBRACKET,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_LBRACKET);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);    
-		break;
-		
-		case combination_39:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_QUOTE,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_QUOTE);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_40:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_MINUS,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_MINUS);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_41:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_TILDE,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_TILDE);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-
-		case combination_42:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_1,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_1);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_43:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_2,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_2);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_44:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_3,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_3);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);  
-		break;
-		
-		case combination_45:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_4,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_4);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_46:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_5,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_5);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-
-		case combination_47:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_6,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_6);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_48:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_7,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_7);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_49:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_8,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_8);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_50:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_9,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_9);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_51:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_0,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_0);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_52:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_53:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_54:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_55:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-		
-		case combination_56:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);      
-		break;
-
-		case combination_57:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
-		case combination_58:
-			cleanKeyBuffer(1);
-			if(shift){
-				pressKey2(KEY_A,MOD_SHIFT_LEFT);
-			}else{
-				pressKey(KEY_A);
-			}
-			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);     
-		break;
-		
+				
 		default:
 			cleanKeyBuffer(1);
 			usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
 		break;
 	}
 }
+//varios A s repetidos no final
+
 
 void Key_program(){
 	// configura botão LEFT
@@ -1209,13 +764,15 @@ void loop(){
 			hy=20;
 		}
          
-        if((digitalRead(MV_LEFT)==HIGH) && (digitalRead(MV_RIGHT)==HIGH)){
+        if((digitalRead(MV_LEFT)==HIGH) && (digitalRead(MV_RIGHT)==HIGH)){   //nunca sera verdade???
 			hx=10;
 		} 
-        if((digitalRead(MV_UP)==HIGH) && (digitalRead(MV_DOWN)==HIGH)){
+        if((digitalRead(MV_UP)==HIGH) && (digitalRead(MV_DOWN)==HIGH)){		//nunca sera verdade???
 			hy=10;
 		} 
         
+		
+		// verificar!!!
         mouse_x = hx;
         mouse_x = constrain(map(mouse_x, 0, 20, -travel, +travel), -travel, +travel);
         mouse_x = (mouse_x/PRECISION)*PRECISION;
@@ -1263,7 +820,7 @@ void loop(){
 		}else{
 			drag_click_switch=false;
         }
-        
+        // elif ou ja setar a variavel nos testes que esta acima
 		if(left_click_action){
             mouse_buttons |= 0x01;
         }
@@ -1276,7 +833,7 @@ void loop(){
             mouse_buttons |= 0x01;
         }
               
-        usbMultiHID.send_mouse_report(mouse_buttons, mouse_x, mouse_y, 0);
+        usbMultiHID.send_mouse_report(mouse_buttons, mouse_x, mouse_y, 0);//envia dado do mouse, ok
         
         if(double_click_action){
             usbMultiHID.update();
@@ -1326,6 +883,7 @@ void loop(){
 				}
 			}
 		}
+		// quando o mouse_whell for pressionado o passo do mouse poderia ser diminuido
 		usbMultiHID.send_mouse_report(mouse_buttons, mouse_x, mouse_y, mouse_wheel);
 	}//End of mode scroll
   
