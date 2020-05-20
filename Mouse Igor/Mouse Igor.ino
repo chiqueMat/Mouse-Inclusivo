@@ -40,7 +40,7 @@
 
 //definicoes retiradas de usbhid...
 
-//existem duas formas de trabalhar com essa tabela, colocar todas as conbinacoes e verificar os valores de ponteiros validos
+//existem duas formas de trabalhar com essa tabela, colocar todas as combinacoes e verificar os valores de ponteiros validos
 // ou colocar todos os valores como 0 e depois para valores de ponteiros validos colocar o valor correspondente, a segunda abordagem sera tomada
 
 #define nada 0
