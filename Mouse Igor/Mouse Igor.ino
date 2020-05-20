@@ -42,6 +42,7 @@
 
 //existem duas formas de trabalhar com essa tabela, colocar todas as conbinacoes e verificar os valores de ponteiros validos
 // ou colocar todos os valores como 0 e depois para valores de ponteiros validos colocar o valor correspondente, a segunda abordagem sera tomada
+
 #define nada 0
 const char tabela[]={ 
  nada,//        0
@@ -208,20 +209,20 @@ boolean pressed_shift_condition=false;
 boolean shift=false;
 
 //keyboard auxiliar variables:
-int mouse_pins[8]={7,8,11,10,12,13,6,5};
-uint16_t keyboard_buttons=0;
+int mouse_pins[8]={7,8,11,10,12,13,6,5}; // pinagem dos botoes do mouse
+uint16_t keyboard_buttons=0; //variael que ira armazenar o botao selecionado? 
 byte count_verify_buttons=0;
 byte bit_0_8_keyboard_buttons=0;
-boolean bit_0_8_keyboard_buttons_flag=true;//true to bit 0 and false to bit 8
+boolean bit_0_8_keyboard_buttons_flag=true; //true to bit 0 and false to bit 8
 byte first_pressed_button=0;
 byte second_pressed_button=0;
 boolean pressed_button_flag=false;
 boolean pressed_second_combination_condition=false;
 boolean second_combination=false;
 
-boolean mode_flag = true;// original = true
-boolean bt_drag = false;// original = false
-boolean prog_press = false;// original = false
+boolean mode_flag = true; // original = true
+boolean bt_drag = false; // original = false
+boolean prog_press = false; // original = false
   
 byte keypresses[KEYPRESS_BUFFER_LENGTH];
 byte key_cursor = 1;
@@ -460,7 +461,7 @@ void verify_keyboard_buttons(){
 						if(i==7){//condition to set the 15th bit of keyboard_control
 							pressed_second_combination_condition=true;
 							bit_0_8_keyboard_buttons_flag=true;
-                            goto second_combination_jump;
+                            goto second_combination_jump; //-- WHAT?? GOTO EM C, MUITO LOKO ESSE CODIGO !!!!
                         }
                         second_pressed_button=i;
                     }
@@ -492,7 +493,7 @@ void verify_keyboard_buttons(){
 		}
     }
 }
-//---500 linhas de do teclado que podem ser retiradas
+
 void keyboard_control(){
 	
 	ponteiro_tabela=&tabela+keyboard_buttons; // verificar se esta funcionando
@@ -504,8 +505,8 @@ void keyboard_control(){
 		}
 		usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses); // precisa fazer algo mais aqui??
 
-
 //<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//verificar o que esta abaixo , nesta funcao
 	switch(keyboard_buttons){
 		case 0:						// o que e este zero?? nao esta definido
 			cleanKeyBuffer(1);
