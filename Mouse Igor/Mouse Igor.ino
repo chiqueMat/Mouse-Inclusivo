@@ -117,70 +117,6 @@ const char tabela[]={
  KEY_F12 //     69
 }
 *char poteiro_tabela=&tabela // inicia umpoteiro apontando para a constante tabela
-#define combination_01 0x0101 // 0000 0001 0000 0001
-#define combination_02 0x0201 // 0000 0010 0000 0001
-#define combination_03 0x0202 // 0000 0010 0000 0010
-#define combination_04 0x0102 // 0000 0001 0000 0010
-#define combination_05 0x0402 // 0000 0100 0000 0010
-#define combination_06 0x0404 // 0000 0100 0000 0100
-#define combination_07 0x0204 // 0000 0010 0000 0100
-#define combination_08 0x0804 // 0000 1000 0000 0100
-#define combination_09 0x0808 // 0000 1000 0000 1000
-#define combination_10 0x0408 // 0000 0100 0000 1000
-#define combination_11 0x1008 // 0001 0000 0000 1000
-#define combination_12 0x1010 // 0001 0000 0001 0000
-#define combination_13 0x0810 // 0000 1000 0001 0000
-#define combination_14 0x2010 // 0010 0000 0001 0000
-#define combination_15 0x2020 // 0010 0000 0010 0000
-#define combination_16 0x1020 // 0001 0000 0010 0000 
-#define combination_17 0x0401 // 0000 0100 0000 0001
-#define combination_18 0x0104 // 0000 0001 0000 0100
-#define combination_19 0x0802 // 0000 1000 0000 0010
-#define combination_20 0x0208 // 0000 0010 0000 1000
-#define combination_21 0x1004 // 0001 0000 0000 0100
-#define combination_22 0x0410 // 0000 0100 0001 0000
-#define combination_23 0x2008 // 0010 0000 0000 1000
-#define combination_24 0x0820 // 0000 1000 0010 0000
-#define combination_25 0x0801 // 0000 1000 0000 0001
-#define combination_26 0x0108 // 0000 0001 0000 1000
-#define combination_27 0x1002 // 0001 0000 0000 0010
-#define combination_28 0x0210 // 0000 0010 0001 0000
-#define combination_29 0x2004 // 0010 0000 0000 0100
-#define combination_30 0x0420 // 0000 0100 0010 0000
-#define combination_31 0x1001 // 0001 0000 0000 0001
-#define combination_32 0x0110 // 0000 0001 0001 0000
-#define combination_33 0x2002 // 0010 0000 0000 0010
-#define combination_34 0x0220 // 0000 0010 0010 0000
-#define combination_35 0x8101 // 1000 0001 0000 0001
-#define combination_36 0x8201 // 1000 0010 0000 0001
-#define combination_37 0x8202 // 1000 0010 0000 0010
-#define combination_38 0x8102 // 1000 0001 0000 0010
-#define combination_39 0x8402 // 1000 0100 0000 0010
-#define combination_40 0x8404 // 1000 0100 0000 0100
-#define combination_41 0x8204 // 1000 0010 0000 0100
-#define combination_42 0x8804 // 1000 1000 0000 0100
-#define combination_43 0x8808 // 1000 1000 0000 1000
-#define combination_44 0x8408 // 1000 0100 0000 1000
-#define combination_45 0x9008 // 1001 0000 0000 1000
-#define combination_46 0x9010 // 1001 0000 0001 0000
-#define combination_47 0x8810 // 1000 1000 0001 0000
-#define combination_48 0xa010 // 1010 0000 0001 0000
-#define combination_49 0xa020 // 1010 0000 0010 0000
-#define combination_50 0x9020 // 1001 0000 0010 0000
-#define combination_51 0x8401 // 1000 0100 0000 0001
-#define combination_52 0x8104 // 1000 0001 0000 0100
-#define combination_53 0x8802 // 1000 1000 0000 0010
-#define combination_54 0x8208 // 1000 0010 0000 1000
-#define combination_55 0x9004 // 1001 0000 0000 0100
-#define combination_56 0x8410 // 1000 0100 0001 0000
-#define combination_57 0x8820 // 1000 1000 0010 0000
-#define combination_58 0x8801 // 1000 1000 0000 0001
-
-// definicao dos botoes reprogramaveis
-byte BUTTON_LEFT =   7;
-byte BUTTON_2CLICK = 8;
-byte BUTTON_RIGHT =  6;
-byte BUTTON_DRAG =   5;
 
 boolean led_flag=false;
 
@@ -209,7 +145,16 @@ boolean pressed_shift_condition=false;
 boolean shift=false;
 
 //keyboard auxiliar variables:
-int mouse_pins[8]={7,8,11,10,12,13,6,5}; // pinagem dos botoes do mouse
+
+// definicao dos botoes reprogramaveis
+byte BUTTON_LEFT =   7;
+byte BUTTON_2CLICK = 8;
+byte BUTTON_RIGHT =  6;
+byte BUTTON_DRAG =   5;
+
+int mouse_pins[8]={7,8,11,10,12,13,6,5}; // pinagem dos botoes do mouse - mais uma definicao de botoes?
+int numero_botoes=8; // numero de botoes que o mouse possui e serao checados
+int botoes_pressionados[]={0,0};
 uint16_t keyboard_buttons=0; //variael que ira armazenar o botao selecionado? 
 byte count_verify_buttons=0;
 byte bit_0_8_keyboard_buttons=0;
@@ -436,67 +381,32 @@ void verify_mode(){
 }
 
 void verify_keyboard_buttons(){
-    int i;
-    if(pressed_second_combination_condition){
-        if(digitalRead(mouse_pins[7])==HIGH){
-			second_combination=!second_combination;
-			pressed_second_combination_condition=false;
-			pressed_button_flag=false;
-		}
-    }
-    
-    if(!pressed_button_flag){
-        for(i=0;i<8;i++){
-            if(digitalRead(mouse_pins[i])==LOW){
-                delay(25);
-                if(digitalRead(mouse_pins[i])==LOW){
-                    if(bit_0_8_keyboard_buttons_flag){
-                        if(i==7){//condition to set the 15th bit of keyboard_control
-							pressed_second_combination_condition=true;
-							bit_0_8_keyboard_buttons_flag=true;
-                            goto second_combination_jump;
-                        }
-                        first_pressed_button=i;
-                    }else{
-						if(i==7){//condition to set the 15th bit of keyboard_control
-							pressed_second_combination_condition=true;
-							bit_0_8_keyboard_buttons_flag=true;
-                            goto second_combination_jump; //-- WHAT?? GOTO EM C, MUITO LOKO ESSE CODIGO !!!!
-                        }
-                        second_pressed_button=i;
-                    }
-                    bit_0_8_keyboard_buttons_flag=!bit_0_8_keyboard_buttons_flag;
-                    
-                    
-					second_combination_jump:
-					
-					pressed_button_flag=true;
-                    break;//finish for()
-                }
-            }
-        }
-    }else{
-		if(!pressed_second_combination_condition){
-			if((digitalRead(mouse_pins[first_pressed_button])==HIGH) && (!bit_0_8_keyboard_buttons_flag)){
-				pressed_button_flag=false;
-			}
-			if((digitalRead(mouse_pins[second_pressed_button])==HIGH) && (bit_0_8_keyboard_buttons_flag)){
-				bitSet(keyboard_buttons,first_pressed_button);
-				bitSet(keyboard_buttons,second_pressed_button+8);
-				if(second_combination){
-					bitSet(keyboard_buttons,15);
-				}else{
-					bitClear(keyboard_buttons,15);
-				}
-				pressed_button_flag=false;
-			}
-		}
-    }
+	int ia=0
+	for(ia=0;ia<numero_botoes;i++){
+		if(mouse_pins[i]==LOW){ 
+			while (mouse_pins[i]==LOW) {
+				delay_ms(15);
+			};
+			break;
+		} 
+	}
+	//se nenhum botao foi pressionado os dois valores da variavel botoes_pressionados serao 0
+	if (botoes_pressionados[0]==0){
+		botoes_pressionados[0]=ia;
+	}
+	else if(botoes_pressionados[0]!=ia){  // dois numeros iguais sao proibidos apenas para facilitar a programacao
+		botoes_pressionados[1]=ia
+	}
 }
 
 void keyboard_control(){
-	
-	ponteiro_tabela=&tabela+keyboard_buttons; // verificar se esta funcionando
+	// para usar esta funcao, os botoes deverao ser enumerados, de 1 a 8, 
+	// e o keyboard_buttons devera ter o valor de 10*Primeiro_botao+segundo_botao
+	// o resultado disso sera a posicao do elemento na tabela, ajustando a sequencia dos elemetnos 
+	// na variavel tabela pode-se reorganizar todo o teclado.	
+	ponteiro_tabela=&tabela+10*botoes_pressionados[1]+botoes_pressionados[0]; // verificar se esta funcionando
+	botoes_pressionados[1]=0;
+	botoes_pressionados[0]=0;
 	cleanKeyBuffer(1);
 		if(shift){
 			pressKey2(*ponteiro_tabela,MOD_SHIFT_LEFT);
@@ -890,8 +800,9 @@ void loop(){
   
 	if(mode_keyboard){
 		verify_keyboard_buttons();
-		keyboard_control();
-		keyboard_buttons=0;
+		if ((botoes_pressionados[0]!=0)&&(botoes_pressionados[1]!=0)){
+			keyboard_control();
+		}
 	}//End of mode keyboard
   
 	if(mode_fliperama){ 
