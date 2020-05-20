@@ -116,7 +116,7 @@ const char tabela[]={
  KEY_F11,//     68
  KEY_F12 //     69
 }
-*char poteiro_tabela=&tabela // inicia umpoteiro apontando para a constante tabela
+char poteiro_tabela=0; // inicia uma variavel que ira indicar a posicao da tabela em que iremos pegar o caracter
 
 boolean led_flag=false;
 
@@ -404,14 +404,14 @@ void keyboard_control(){
 	// e o keyboard_buttons devera ter o valor de 10*Primeiro_botao+segundo_botao
 	// o resultado disso sera a posicao do elemento na tabela, ajustando a sequencia dos elemetnos 
 	// na variavel tabela pode-se reorganizar todo o teclado.	
-	ponteiro_tabela=&tabela+10*botoes_pressionados[1]+botoes_pressionados[0]; // verificar se esta funcionando
+	ponteiro_tabela=10*botoes_pressionados[1]+botoes_pressionados[0]; // verificar se esta funcionando
 	botoes_pressionados[1]=0;
 	botoes_pressionados[0]=0;
 	cleanKeyBuffer(1);
 		if(shift){
-			pressKey2(*ponteiro_tabela,MOD_SHIFT_LEFT);
+			pressKey2(tabela[ponteiro_tabela],MOD_SHIFT_LEFT);
 		}else{
-			pressKey(*ponteiro_tabela);
+			pressKey(tabela[ponteiro_tabela]);
 		}
 		usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses); // precisa fazer algo mais aqui??
 
