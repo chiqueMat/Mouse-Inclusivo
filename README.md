@@ -1,5 +1,9 @@
 # Mouse-Inclusivo
 
+Há três versões diferentes de mouses Bernardo, Bianca e Igor, estes códigos devem permanecer inalterados pois são
+referências do software que funciona adequadamente no hardware. 
+A pasta '/Example' servirá para o teste de novas versões de mouses utilizando a biblioteca '/Libraries/MouseInclusivoLib'.
+
 en:
 Adaptative mouses for disable people
 
