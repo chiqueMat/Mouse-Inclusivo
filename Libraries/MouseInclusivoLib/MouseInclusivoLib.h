@@ -24,6 +24,7 @@ void Key_program();
 // Mouse:
 
 void click(Mouse_click);
+void keyboard_write(byte key);
 
 
 

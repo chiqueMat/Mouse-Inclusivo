@@ -25,18 +25,17 @@ void cleanKeyBuffer(byte key_cursor) {
 }
 
 void pressKey(byte key) {
-  pressKey2(key, 0,1);
+	pressKey2(key, 0,1);
 }
 
 void pressKey2(byte key, byte modifiers, byte key_cursor) {
-  // Monta, bit a bit do byte 0, com os modificadores passados
-  key_cursor = 1;
-  if (modifiers != 0) keypresses[0] |= modifiers;
-  
-  // Monta, byte a byte, apartir do byte 1 até o limite de 6, o buffer de teclas
-  if ((key != 0) && (key_cursor < KEYPRESS_BUFFER_LENGTH)) {
-    keypresses[key_cursor++] = key;
-  }
+	// Monta, bit a bit do byte 0, com os modificadores passados
+	key_cursor = 1;
+	if (modifiers != 0) keypresses[0] |= modifiers;
+	// Monta, byte a byte, apartir do byte 1 até o limite de 6, o buffer de teclas
+	if ((key != 0) && (key_cursor < KEYPRESS_BUFFER_LENGTH)) {
+		keypresses[key_cursor++] = key;
+	}
 }
 
 //inside the library, it is supposed to receive every button
@@ -203,5 +202,9 @@ void click(Mouse_click mouse_click) {
 	usbMultiHID.send_mouse_report(mouse_buttons, mouse_x, mouse_y, 0);
 }
 
-void keyboard_write(char 
+void keyboard_write(byte key) {
+	cleanKeyBuffer(1);// no caso de apertar duas teclas ao mesmo tempo, é necessário?
+	pressKey(key);
+	usbMultiHID.send_keyboard_report(KEYPRESS_BUFFER_LENGTH, keypresses);
+}
 
