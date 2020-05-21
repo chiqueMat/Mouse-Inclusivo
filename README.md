@@ -12,7 +12,7 @@ At State University of Santa Catarina, an brazilian public university, was devel
 for people with motor difficulty.
 
 pt-br:
-Mouses inclusiovos para pessoas com necessidades especiais
+Mouses inclusivos para pessoas com necessidades especiais
 
 Há diversas dificuldades quando se trata de acessibilidade digital para pessoas com deficiencias, mouses são uma uma delas.
 Na Universidade do Estado de Santa Catarina, uma universidade pública brasileira, foi desenvolvido um projeto de mouses
